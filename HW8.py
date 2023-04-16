@@ -103,11 +103,22 @@ def get_highest_rating(db): #Do this through DB as well
     conn = sqlite3.connect(full_path)
     cur = conn.cursor()
     val = cur.execute(
-        'SELECT categories.category, restaurants.rating FROM restaurants JOIN ON restaurants.category_id = categories.id'
+        'SELECT categories.category, restaurants.rating FROM restaurants JOIN categories ON restaurants.category_id = categories.id'
     )
-    highest_rating = cur.fetchall()
+    cat_to_ratings = cur.fetchall()
+    dic_avg_rating = {}
+    for item in cat_to_ratings:
+        if item[0] in dic_avg_rating:
+            dic_avg_rating[item[0]]['count'] += 1
+            tem = dic_avg_rating[item[0]]['avg']
+            dic_avg_rating[item[0]]['avg'] = (item[1] + tem)/dic_avg_rating[item[0]]['count']
+        else:
+            temp = {}
+            dic_avg_rating[item[0]]['count'] = 1
+            dic_avg_rating[item[0]]['avg'] = item[1]
+   
 
-    return halo
+    return 1
 
 #Try calling your functions here
 def main():
