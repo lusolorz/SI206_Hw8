@@ -97,13 +97,23 @@ def get_highest_rating(db): #Do this through DB as well
     The second bar chart displays the buildings along the y-axis and their ratings along the x-axis 
     in descending order (by rating).
     """
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    source_dir = os.path.dirname(__file__) #<-- directory name
+    full_path = os.path.join(source_dir, db)
+    conn = sqlite3.connect(full_path)
+    cur = conn.cursor()
+    val = cur.execute(
+        'SELECT MAX restaurants.rating FROM restaurants'
+    )
+    halo = cur.fetchall()
+    return halo
 
 #Try calling your functions here
 def main():
-    load_rest_data('South_U_Restaurants.db')
-    plot_rest_categories('South_U_Restaurants.db')
-    find_rest_in_building(1140, 'South_U_Restaurants.db')
+    one = load_rest_data('South_U_Restaurants.db')
+    two = plot_rest_categories('South_U_Restaurants.db')
+    three = find_rest_in_building(1140, 'South_U_Restaurants.db')
+    four = get_highest_rating('South_U_Restaurants.db')
 
 class TestHW8(unittest.TestCase):
     def setUp(self):
