@@ -103,9 +103,10 @@ def get_highest_rating(db): #Do this through DB as well
     conn = sqlite3.connect(full_path)
     cur = conn.cursor()
     val = cur.execute(
-        'SELECT MAX restaurants.rating FROM restaurants'
+        'SELECT categories.category, restaurants.rating FROM restaurants JOIN ON restaurants.category_id = categories.id'
     )
-    halo = cur.fetchall()
+    highest_rating = cur.fetchall()
+
     return halo
 
 #Try calling your functions here
