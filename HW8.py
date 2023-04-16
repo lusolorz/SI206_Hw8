@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import os
 import sqlite3
 import unittest
+from collections import OrderedDict
+from operator import getitem
 
 
 
@@ -63,7 +65,6 @@ def plot_rest_categories(db):
     plt.xlabel("Number of Restaurants")
     plt.show()
     return ret
-    
 
 def find_rest_in_building(building_num, db):
     '''
@@ -114,11 +115,67 @@ def get_highest_rating(db): #Do this through DB as well
             dic_avg_rating[item[0]]['avg'] = (item[1] + tem)/dic_avg_rating[item[0]]['count']
         else:
             temp = {}
-            dic_avg_rating[item[0]]['count'] = 1
-            dic_avg_rating[item[0]]['avg'] = item[1]
-   
+            temp['count'] = 1
+            temp['avg'] = item[1]
+            dic_avg_rating[item[0]] = temp
+            
+    res = OrderedDict(sorted(dic_avg_rating.items(),
+       key = lambda x: getitem(x[1], 'avg'), reverse=True))
+    for item in res:
+        highest = []
+        highest.append(item)
+        highest.append(res[item]['avg'])
+        highest = tuple(highest)
+        break
+    val2 = cur.execute(
+        'SELECT buildings.building, restaurants.rating FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id'
+    )
+    cat_to_ratings_2 = cur.fetchall()
+    dic_avg_rating_2 = {}
+    for item in cat_to_ratings_2:
+        if item[0] in dic_avg_rating:
+            dic_avg_rating_2[item[0]]['count'] += 1
+            tem = dic_avg_rating_2[item[0]]['avg']
+            dic_avg_rating_2[item[0]]['avg'] = (item[1] + tem)/dic_avg_rating_2[item[0]]['count']
+        else:
+            temp = {}
+            temp['count'] = 1
+            temp['avg'] = item[1]
+            dic_avg_rating_2[item[0]] = temp
+            
+    res2 = OrderedDict(sorted(dic_avg_rating_2.items(),
+       key = lambda x: getitem(x[1], 'avg'), reverse=True))
+    for item in res2:
+        highest_2 = []
+        highest_2.append(item)
+        highest_2.append(res2[item]['avg'])
+        highest_2 = tuple(highest_2)
+        break
 
-    return 1
+    cats = []
+    counts = []
+    for item in res:
+        cats.append(item)
+        counts.append(res[item]['avg'])
+
+    plt.barh(cats, counts)
+    plt.title("Averages ratings for categories")
+    plt.ylabel('Restaurant Categories')
+    plt.xlabel("Average ratings")
+
+    builds = []
+    counts2 = []
+    for item in res2:
+        builds.append(item)
+        counts2.append(res2[item]['avg'])
+
+    plt.barh(builds, counts2)
+    plt.title("Averages ratings for buildings")
+    plt.ylabel('Buildings')
+    plt.xlabel("Average ratings")
+
+    plt.show()
+    return highest, highest_2
 
 #Try calling your functions here
 def main():
