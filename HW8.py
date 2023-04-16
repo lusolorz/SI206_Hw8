@@ -228,9 +228,8 @@ class TestHW8(unittest.TestCase):
         self.assertEqual(restaurant_list[0], 'BTB Burrito')
 
     def test_get_highest_rating(self):
-        pass
-        #highest_rating = get_highest_rating('South_U_Restaurants.db')
-        #self.assertEqual(highest_rating, self.highest_rating)
+        highest_rating = get_highest_rating('South_U_Restaurants.db')
+        self.assertEqual(highest_rating, self.highest_rating)
 
 if __name__ == '__main__':
     main()
